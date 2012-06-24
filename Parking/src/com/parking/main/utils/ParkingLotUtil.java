@@ -27,28 +27,28 @@ public class ParkingLotUtil {
 
 		List<ParkingLotInformation> pLots = new ArrayList<ParkingLotInformation> ();
 		
-		pLots.add(getPLData("Diamond Parking Queen Anne",
+		pLots.add(getPLData(0, "Diamond Parking Queen Anne",
 				"3161 Elliott Avenue #100 Seattle, WA 98121 (206) 447-7275",
 				"http://grfx.cstv.com/schools/utva/graphics/auto/DiamondParking.jpg",
 				5,
 				10.0
 				));
 		
-		pLots.add(getPLData("Mercer Street Garage",
+		pLots.add(getPLData(1, "Mercer Street Garage",
 				"Lower Queen Anne, Seattle, WA 0.6 mi E  (206) 684-2489",
 				"http://grfx.cstv.com/schools/utva/graphics/auto/DiamondParking.jpg",
 				10,
 				14
 				));
 		
-		pLots.add(getPLData("Seattle Center 5th Ave N Parking Garage", 
+		pLots.add(getPLData(2, "Seattle Center 5th Ave N Parking Garage", 
 				"516 Harrison Street Seattle, WA 98109 (206) 684-7200", 
 				"http://grfx.cstv.com/schools/utva/graphics/auto/DiamondParking.jpg",
 				4, 
 				12
 				));
 		
-		pLots.add(getPLData("Standard Parking - Goat Hill Garage",
+		pLots.add(getPLData(3, "Standard Parking - Goat Hill Garage",
 				"415 6th Avenue Seattle, WA 98109 (206) 783-6199",
 				"http://grfx.cstv.com/schools/utva/graphics/auto/DiamondParking.jpg",
 				5,
@@ -58,9 +58,9 @@ public class ParkingLotUtil {
 		return pLots;
 	}
 
-	private ParkingLotInformation getPLData(String name, String addr, String url, int num, double rate) {
+	private ParkingLotInformation getPLData(int id, String name, String addr, String url, int num, double rate) {
 		
-		ParkingLotInformation pLot = new ParkingLotInformation();
+		ParkingLotInformation pLot = new ParkingLotInformation(id);
 		pLot.setName(name);
 		pLot.setAddress(addr);
 		pLot.setPhotoURL(url);

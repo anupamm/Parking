@@ -5,8 +5,6 @@ import java.util.List;
 
 public class ParkingLotInformation {
  
-	private static int counter = -1; 
-	
 	private int id ; //default value which will be incremented on init in constructor
 	
 	private String name;
@@ -21,9 +19,8 @@ public class ParkingLotInformation {
 	
 	private List <Spot> spaces; 
 	
-	public ParkingLotInformation(){
-		counter += 1;
-		this.id = counter;
+	public ParkingLotInformation(int id){
+		this.id = id;
 	}
 	
 	public int getId() {
