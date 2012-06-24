@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
+import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 
@@ -30,6 +31,8 @@ public class GoogleMapActivity extends MapActivity implements OnClickListener,
 	private GoogleMapsOverlays currentlocation;
 	private LocationManager service;
 	private String provider;
+	private List<Overlay> mapOverlays;
+	private MyLocationOverlay myLocationOverlay;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -37,26 +40,34 @@ public class GoogleMapActivity extends MapActivity implements OnClickListener,
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.googlemapslayout);
 		MapView mapView = (MapView) findViewById(R.id.mapview);
-		mapView.setBuiltInZoomControls(true);
 
-		List<Overlay> mapOverlays = mapView.getOverlays();
+		mapOverlays = mapView.getOverlays();
 		Drawable drawable = this.getResources().getDrawable(
 				R.drawable.red_marker_small);
 		itemizedoverlay = new GoogleMapsOverlays(drawable, this);
 
-		GeoPoint point = new GeoPoint(30443769, -91158458);
-		GeoPoint point2 = new GeoPoint(17385812, 78480667);
-		// setOverlays(point,"Laissez les bon temps rouler!",
-		// "I'm in Louisiana!");
+		myLocationOverlay = new MyLocationOverlay(this, mapView);
+		mapView.getOverlays().add(myLocationOverlay);
+
+		myLocationOverlay.runOnFirstFix(new Runnable() {
+			public void run() {
+				((MapView)findViewById(R.id.mapview)).getController().animateTo(
+						myLocationOverlay.getMyLocation());
+			}
+		});
 
 		service = (LocationManager) getSystemService(LOCATION_SERVICE);
 		boolean enabled = service
 				.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
 		if (!enabled) {
+			Log.v("GoogleMapActivity", "GPS Not enabled!");
 			Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+			Log.v("GoogleMapActivity", "Firing GPS intent!");
 			startActivity(intent);
-		}
+			Log.v("GoogleMapActivity", "Should be enabled by now!");
+		} else
+			Log.v("GoogleMapActivity", "Already enabled!");
 
 		// Define the criteria how to select the locatioin provider -> use
 		// default
@@ -73,17 +84,32 @@ public class GoogleMapActivity extends MapActivity implements OnClickListener,
 		GeoPoint point3 = new GeoPoint(lng, lat);
 		setDestination(point3, "mylocation", point3.getLongitudeE6() + " x "
 				+ point3.getLatitudeE6());
+		GeoPoint mockLocation = new GeoPoint(47622220, -122362638);
+		setDestination(
+				mockLocation,
+				"myLocation",
+				mockLocation.getLongitudeE6() + " x "
+						+ mockLocation.getLatitudeE6());
+
+		GeoPoint parkingGarage1 = new GeoPoint(47618277, -122357779);
+		GeoPoint parkingGarage2 = new GeoPoint(47608603, -122341127);
+		GeoPoint parkingGarage3 = new GeoPoint(47610124, -122334721);
 
 		List<GeoPoint> PointsList = new ArrayList<GeoPoint>();
-		PointsList.add(point);
-		PointsList.add(point2);
+		PointsList.add(parkingGarage1);
+		PointsList.add(parkingGarage2);
+		PointsList.add(parkingGarage3);
 
 		setParkinglots(PointsList);
 
-		mapOverlays.add(currentlocation);
+		//mapOverlays.add(currentlocation);
 		mapOverlays.add(itemizedoverlay);
 
 		findViewById(R.id.editinfobutton).setOnClickListener(this);
+		findViewById(R.id.purchasebutton).setOnClickListener(this);
+		findViewById(R.id.mapview).setOnClickListener(this);
+		
+		mapView.setBuiltInZoomControls(true);
 	}
 
 	private void setDestination(GeoPoint myPoint, String sDialog,
@@ -117,10 +143,25 @@ public class GoogleMapActivity extends MapActivity implements OnClickListener,
 		int id = v.getId();
 		switch (id) {
 		case R.id.editinfobutton:
+			Log.v("GoogleMapActivity", "Edit button clicked!");
 			Intent editInfoIntent = new Intent(this, ParkingActivity.class);
 			startActivityForResult(editInfoIntent, Constants.EDIT_MY_ADDR_INFO);
 			break;
 
+		case R.id.purchasebutton:
+			Log.v("GoogleMapActivity", "Buy button clicked!");
+			Intent ParkingLotActivityIntent = new Intent(this,
+					ParkingLotInfoActivity.class);
+			startActivityForResult(ParkingLotActivityIntent,
+					Constants.EDIT_MY_ADDR_INFO);
+
+		case R.id.mapview:
+			Log.v("GoogleMapActivity", "Buy button clicked!");
+			Intent ParkingLotActivityIntent1 = new Intent(this,
+					ParkingLotInfoActivity.class);
+			ParkingLotActivityIntent1.putExtra("ParkingLotID", "Testing");
+			startActivityForResult(ParkingLotActivityIntent1,
+					Constants.VIEW_PARKINGLOT_DATA);
 		default:
 			break;
 		}
@@ -132,7 +173,7 @@ public class GoogleMapActivity extends MapActivity implements OnClickListener,
 		switch (requestCode) {
 		case Constants.EDIT_MY_ADDR_INFO:
 			Bundle extras = (data != null) ? data.getExtras() : null;
-			Log.v("File output file", "File was here");
+			Log.v("GoogleMapActivity", "Edit button clicked!");
 			if (extras != null && extras.containsKey("Testing")) {
 				Log.v("Testing", extras.getString("Testing"));
 			}
@@ -148,20 +189,23 @@ public class GoogleMapActivity extends MapActivity implements OnClickListener,
 	protected void onResume() {
 		super.onResume();
 		service.requestLocationUpdates(provider, 400, 1, this);
+		myLocationOverlay.enableMyLocation();
 	}
 
 	/* Remove the locationlistener updates when Activity is paused */
 	@Override
 	protected void onPause() {
 		super.onPause();
+		myLocationOverlay.disableMyLocation();
 		service.removeUpdates(this);
+		
 	}
 
 	@Override
 	public void onLocationChanged(Location location) {
-		int lat = (int) (location.getLatitude());
-		int lng = (int) (location.getLongitude());
-		// TODO Do something with changed location 
+		int lat = (int) (location.getLatitude() * 1E6);
+		int lng = (int) (location.getLongitude() * 1E6);
+		// TODO Do something with changed location
 	}
 
 	@Override
