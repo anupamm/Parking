@@ -4,7 +4,10 @@ import java.util.Date;
 import java.util.List;
 
 public class ParkingLotInformation {
-	private static int id = -1; //default value which will be incremented on init in constructor
+ 
+	private static int counter = -1; 
+	
+	private int id ; //default value which will be incremented on init in constructor
 	
 	private String name;
 	
@@ -19,7 +22,8 @@ public class ParkingLotInformation {
 	private List <Spot> spaces; 
 	
 	public ParkingLotInformation(){
-		id += 1;
+		counter += 1;
+		this.id = counter;
 	}
 	
 	public int getId() {
