@@ -34,7 +34,26 @@ public class ParkingLotUtil {
 				10.0
 				));
 		
+		pLots.add(getPLData("Mercer Street Garage",
+				"Lower Queen Anne, Seattle, WA 0.6 mi E  (206) 684-2489",
+				"http://grfx.cstv.com/schools/utva/graphics/auto/DiamondParking.jpg",
+				10,
+				14
+				));
 		
+		pLots.add(getPLData("Seattle Center 5th Ave N Parking Garage", 
+				"516 Harrison Street Seattle, WA 98109 (206) 684-7200", 
+				"http://grfx.cstv.com/schools/utva/graphics/auto/DiamondParking.jpg",
+				4, 
+				12
+				));
+		
+		pLots.add(getPLData("Standard Parking - Goat Hill Garage",
+				"415 6th Avenue Seattle, WA 98109 (206) 783-6199",
+				"http://grfx.cstv.com/schools/utva/graphics/auto/DiamondParking.jpg",
+				5,
+				18
+				));
  		
 		return pLots;
 	}

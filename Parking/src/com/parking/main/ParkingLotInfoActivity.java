@@ -1,9 +1,9 @@
 package com.parking.main;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.widget.Gallery;
 import android.widget.TextView;
 
 import com.parking.main.model.ParkingLotInformation;
@@ -16,9 +16,17 @@ public class ParkingLotInfoActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.parking_info_lt);
 		
+		Intent myIntend = getIntent();
+		Bundle extras = myIntend.getExtras(); 
+		
+		int pid = 0;
+		if (extras != null){
+			pid = extras.getInt("pid");
+		}
+		
 		ParkingLotUtil plu = new ParkingLotUtil();
 		
-		ParkingLotInformation pl = plu.getParkingLotInfoById(0);
+		ParkingLotInformation pl = plu.getParkingLotInfoById(pid);
 			
 		TextView nameTitleView = (TextView) findViewById (R.id.nameTitle);
 		nameTitleView.setBackgroundColor(Color.YELLOW);
