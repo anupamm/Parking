@@ -58,8 +58,10 @@ public class GoogleMapsOverlays extends ItemizedOverlay<OverlayItem> {
 		dialog.show();
 		clickedIndex = index;		
 		*/
-		
-		mContext.startActivity(new Intent(mContext,ParkingLotInfoActivity.class));
+		Log.v("GoogleMapsOverlays",index+"");
+		Intent myIntentFire = new Intent(mContext, ParkingLotInfoActivity.class);
+		myIntentFire.putExtra("pid", index);
+		mContext.startActivity(myIntentFire);
 		
 		return true;
 	}

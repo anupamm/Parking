@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
+import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
@@ -29,10 +30,12 @@ public class GoogleMapActivity extends MapActivity implements OnClickListener,
 
 	private GoogleMapsOverlays itemizedoverlay;
 	private GoogleMapsOverlays currentlocation;
+	private MapController mapController;
 	private LocationManager service;
 	private String provider;
 	private List<Overlay> mapOverlays;
 	private MyLocationOverlay myLocationOverlay;
+	private boolean DisableGPS = false;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -40,7 +43,9 @@ public class GoogleMapActivity extends MapActivity implements OnClickListener,
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.googlemapslayout);
 		MapView mapView = (MapView) findViewById(R.id.mapview);
-
+		
+		mapController = mapView.getController();
+		
 		mapOverlays = mapView.getOverlays();
 		Drawable drawable = this.getResources().getDrawable(
 				R.drawable.red_marker_small);
@@ -106,10 +111,11 @@ public class GoogleMapActivity extends MapActivity implements OnClickListener,
 		mapOverlays.add(itemizedoverlay);
 
 		findViewById(R.id.editinfobutton).setOnClickListener(this);
-		findViewById(R.id.purchasebutton).setOnClickListener(this);
 		findViewById(R.id.mapview).setOnClickListener(this);
 		
 		mapView.setBuiltInZoomControls(true);
+		
+		cleanZoom(PointsList);
 	}
 
 	private void setDestination(GeoPoint myPoint, String sDialog,
@@ -128,7 +134,29 @@ public class GoogleMapActivity extends MapActivity implements OnClickListener,
 			}
 		}
 	}
+	
+	private void cleanZoom(List<GeoPoint> items){
+		int minLat = Integer.MAX_VALUE;
+		int maxLat = Integer.MIN_VALUE;
+		int minLon = Integer.MAX_VALUE;
+		int maxLon = Integer.MIN_VALUE;
 
+		for (GeoPoint item : items) 
+		{ 
+
+		      int lat = item.getLatitudeE6();
+		      int lon = item.getLongitudeE6();
+
+		      maxLat = Math.max(lat, maxLat);
+		      minLat = Math.min(lat, minLat);
+		      maxLon = Math.max(lon, maxLon);
+		      minLon = Math.min(lon, minLon);
+		 }
+		double fitFactor = 1.5;
+		mapController.zoomToSpan((int) (Math.abs(maxLat - minLat) * fitFactor), (int)(Math.abs(maxLon - minLon) * fitFactor));
+		mapController.animateTo(new GeoPoint( (maxLat + minLat)/2, 
+		(maxLon + minLon)/2 )); 
+	}
 	private void setOverlays(GeoPoint myPoint, String sDialog, String sMessage) {
 		itemizedoverlay.addOverlay(new OverlayItem(myPoint, sDialog, sMessage));
 	}
@@ -148,13 +176,6 @@ public class GoogleMapActivity extends MapActivity implements OnClickListener,
 			startActivityForResult(editInfoIntent, Constants.EDIT_MY_ADDR_INFO);
 			break;
 
-		case R.id.purchasebutton:
-			Log.v("GoogleMapActivity", "Buy button clicked!");
-			Intent ParkingLotActivityIntent = new Intent(this,
-					ParkingLotInfoActivity.class);
-			startActivityForResult(ParkingLotActivityIntent,
-					Constants.EDIT_MY_ADDR_INFO);
-
 		case R.id.mapview:
 			Log.v("GoogleMapActivity", "Buy button clicked!");
 			Intent ParkingLotActivityIntent1 = new Intent(this,
@@ -172,14 +193,24 @@ public class GoogleMapActivity extends MapActivity implements OnClickListener,
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
 		case Constants.EDIT_MY_ADDR_INFO:
+			
+			
 			Bundle extras = (data != null) ? data.getExtras() : null;
 			Log.v("GoogleMapActivity", "Edit button clicked!");
-			if (extras != null && extras.containsKey("Testing")) {
-				Log.v("Testing", extras.getString("Testing"));
+			if (extras != null && extras.containsKey(ParkingActivity.EXTRA_MESSAGE)) {
+				Log.v("Address", extras.getString(ParkingActivity.EXTRA_MESSAGE));
+				//Disable GPS
+				DisableGPS = true;
 			}
+			if (extras != null && extras.containsKey(ParkingActivity.START_MESSAGE)) {
+				Log.v("Start Time", extras.getString(ParkingActivity.START_MESSAGE));
+				Log.v("End Time", extras.getString(ParkingActivity.END_MESSAGE));
+				DisableGPS = false;
+			}
+			
 			break;
 		default:
-			Log.v("Button click", "Default");
+			Log.v("GoogleMapActivity", "Result default break");
 			break;
 		}
 	}
@@ -188,8 +219,14 @@ public class GoogleMapActivity extends MapActivity implements OnClickListener,
 	@Override
 	protected void onResume() {
 		super.onResume();
-		service.requestLocationUpdates(provider, 400, 1, this);
-		myLocationOverlay.enableMyLocation();
+		if(!DisableGPS){
+			service.requestLocationUpdates(provider, 400, 1, this);
+			myLocationOverlay.enableMyLocation();
+		}
+		else{
+			myLocationOverlay.disableMyLocation();
+			service.removeUpdates(this);
+		}
 	}
 
 	/* Remove the locationlistener updates when Activity is paused */

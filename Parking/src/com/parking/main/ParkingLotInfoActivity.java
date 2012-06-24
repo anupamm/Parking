@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.parking.main.model.ParkingLotInformation;
@@ -20,8 +21,9 @@ public class ParkingLotInfoActivity extends Activity {
 		Bundle extras = myIntend.getExtras(); 
 		
 		int pid = 0;
-		if (extras != null){
+		if (extras != null && extras.containsKey("pid")){
 			pid = extras.getInt("pid");
+			Log.v("ParkingLotInfoActivity->pid=",pid+"");
 		}
 		
 		ParkingLotUtil plu = new ParkingLotUtil();

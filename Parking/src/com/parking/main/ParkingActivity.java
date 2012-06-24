@@ -44,7 +44,8 @@ public class ParkingActivity extends Activity {
 	/** Called when the user selects the Send button */
 	public void sendMessage(View view) {
 		// Do something in response to button
-		Intent intent = new Intent(this, DisplayMessageActivity.class);
+		//Intent intent = new Intent(this, DisplayMessageActivity.class);
+		Intent intent = getIntent();
 		EditText editText = (EditText) findViewById(R.id.edit_message);
 		String message = editText.getText().toString();
 		
@@ -54,7 +55,11 @@ public class ParkingActivity extends Activity {
 		intent.putExtra(EXTRA_MESSAGE, message);
 		intent.putExtra(START_MESSAGE, start.getCurrentHour() + ":" + start.getCurrentMinute());
 		intent.putExtra(END_MESSAGE, end.getCurrentHour() + ":" + end.getCurrentMinute());
-		startActivity(intent);
+				
+		//startActivity(intent);
+		
+		setResult(Constants.EDIT_MY_ADDR_INFO,intent);
+		finish();
 	}
 	
 	// display current time

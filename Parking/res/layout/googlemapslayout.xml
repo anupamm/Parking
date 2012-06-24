@@ -32,11 +32,5 @@
             android:layout_height="wrap_content"
             android:text="@string/editinfobuttontext" />
         
-        <Button
-            android:id="@+id/purchasebutton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/purchasebuttontext" />
-        
     </LinearLayout>
 </RelativeLayout>
