@@ -3,8 +3,8 @@
 
     <string name="hello">Hello World, ParkingActivity!</string>
     <string name="app_name">Parking</string>
-    <string name="edit_message">Enter a message</string>
-    <string name="button_send">Send</string>
+    <string name="edit_message">Current Location</string>
+    <string name="button_send">Search Parking</string>
     <string name="testing">test</string>
     <string name="editinfobuttontext">Edit</string>
     <string name="mapskey">0SCfFk8rUxfPRzux4etsh0RoUnenYykRbNVrQJg</string>
