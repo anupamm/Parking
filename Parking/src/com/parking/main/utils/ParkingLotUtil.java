@@ -27,10 +27,11 @@ public class ParkingLotUtil {
 
 		List<ParkingLotInformation> pLots = new ArrayList<ParkingLotInformation> ();
 		
-		pLots.add(getPLData("Diamonp Parking Queen Anne",
+		pLots.add(getPLData("Diamond Parking Queen Anne",
 				"3161 Elliott Avenue #100 Seattle, WA 98121 (206) 447-7275",
 				"http://grfx.cstv.com/schools/utva/graphics/auto/DiamondParking.jpg",
-				5
+				5,
+				10.0
 				));
 		
 		
@@ -38,13 +39,14 @@ public class ParkingLotUtil {
 		return pLots;
 	}
 
-	private ParkingLotInformation getPLData(String name, String addr, String url, int num) {
+	private ParkingLotInformation getPLData(String name, String addr, String url, int num, double rate) {
 		
 		ParkingLotInformation pLot = new ParkingLotInformation();
 		pLot.setName(name);
 		pLot.setAddress(addr);
 		pLot.setPhotoURL(url);
 		pLot.setTotalSpots(num);
+		pLot.setRate(rate);
 		
 		pLot.setSpaces(getPSpaceData(pLot));
 		

@@ -14,6 +14,8 @@ public class ParkingLotInformation {
 	
 	private int totalSpots;
 	
+	private Double rate;
+	
 	private List <Spot> spaces; 
 	
 	public ParkingLotInformation(){
@@ -71,6 +73,15 @@ public class ParkingLotInformation {
 
 	public void setSpaces(List<Spot> spaces) {
 		this.spaces = spaces;
+	}
+
+
+	public Double getRate() {
+		return rate;
+	}
+
+	public void setRate(Double rate) {
+		this.rate = rate;
 	}
 
 
